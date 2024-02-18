@@ -1,10 +1,12 @@
 import RPi.GPIO as GPIO
+import signal
+import sys
 import time
 
-#Read output from W65C02 - tested only on manual clock
+#Read output from 6502 
 
 #A15-A0
-addr_pins = [14,15,18,23,24,25,8,7,1,12,16,20,3,4,17,27]
+addr_pins = [27, 17, 4, 3, 20, 16, 12, 1, 7, 8, 25, 24, 23, 18, 15, 14]
 #D7-D0
 data_pins = [22,10,9,11,0,5,6,13]
 # PHI2
@@ -15,6 +17,17 @@ rwb_pin = 26
 # ---🧹---#
 GPIO.cleanup()
 time.sleep(0.1)
+
+def exit_handler(sig, frame):
+    GPIO.cleanup()
+    sys.exit(0)
+
+def clock_trigger(pin):
+    addr = read_addr()
+    data = read_data()
+    status = 'r' if GPIO.input(rwb_pin) else 'W'
+    reading = 'Addr: {:04x} {} {:02x} - ({:016b})'.format(addr,status, data, addr)
+    print(reading)
 
 def read_addr():
     addr = 0
@@ -29,20 +42,17 @@ def read_data():
     return data
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(clock_pin, GPIO.IN)
 GPIO.setup(rwb_pin, GPIO.IN)
+GPIO.setup(clock_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 for i in addr_pins:
     GPIO.setup(i, GPIO.IN)
 for i in data_pins:
     GPIO.setup(i, GPIO.IN)
 
-#For monostable, manual clock
-while True:
-    if GPIO.input(clock_pin):
-        addr = read_addr()
-        data = read_data()
-        status = 'r' if GPIO.input(rwb_pin) else 'W'
-        reading = 'Addr: {:04x} {} {:02x} - ({:016b})'.format(addr,status, data, addr)
-        print(reading)
-        time.sleep(0.3)
+#Tested on manual clock
+GPIO.add_event_detect(clock_pin, GPIO.FALLING, 
+        callback=clock_trigger, bouncetime=100)
+
+signal.signal(signal.SIGINT,exit_handler)
+signal.pause()
