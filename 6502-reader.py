@@ -1,10 +1,9 @@
 import RPi.GPIO as GPIO
 import time
 
-#"Logic analyzer"
 #Read output from W65C02 - tested only on manual clock
 
-#A0-A15
+#A15-A0
 addr_pins = [14,15,18,23,24,25,8,7,1,12,16,20,3,4,17,27]
 #D7-D0
 data_pins = [22,10,9,11,0,5,6,13]
