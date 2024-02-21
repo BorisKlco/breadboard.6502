@@ -29,15 +29,18 @@ def clock_trigger(pin):
     addr = read_addr()
     current_clock = time.time()
     clk_diff = (current_clock - clock_timing) * 1000
+    freq = 1/(current_clock - clock_timing)
     clock_timing = current_clock
     if r_w:
         data = instructions[addr]
         set_data(data)
-        reading = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms'.format(addr,status, data, addr, clk_diff)
+        #reading = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms({:.2f}Hz)'.format(addr,status, data, addr, clk_diff, freq)
+        reading = 'Addr: {:04x} {} {:02x} - {:.2f}ms({:.2f}Hz)'.format(addr,status, data, clk_diff, freq)
         print(reading)
     else:
         data = read_data()
-        writing = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms'.format(addr,status, data, addr, clk_diff)
+        #writing = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms({:.2f}Hz)'.format(addr,status, data, addr, clk_diff, freq)
+        writing = 'Addr: {:04x} {} {:02x} - {:.2f}ms({:.2f}Hz)'.format(addr,status, data, clk_diff, freq)
         instructions[addr] = data
         print(writing)
 
