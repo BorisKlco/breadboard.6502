@@ -16,23 +16,28 @@ data_pins = [22,10,9,11,0,5,6,13]
 clock_pin = 19
 #R/W
 rwb_pin = 26
+clock_timing = time.time()
 
 def exit_handler(sig, frame):
     GPIO.cleanup()
     sys.exit(0)
     
 def clock_trigger(pin):
+    global clock_timing
     r_w = GPIO.input(rwb_pin)
     status = 'r' if r_w else 'W'
     addr = read_addr()
+    current_clock = time.time()
+    clk_diff = (current_clock - clock_timing) * 1000
+    clock_timing = current_clock
     if r_w:
         data = instructions[addr]
         set_data(data)
-        reading = 'Addr: {:04x} {} {:02x} - ({:016b})'.format(addr,status, data, addr)
+        reading = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms'.format(addr,status, data, addr, clk_diff)
         print(reading)
     else:
         data = read_data()
-        writing = 'Addr: {:04x} {} {:02x} - ({:016b})'.format(addr,status, data, addr)
+        writing = 'Addr: {:04x} {} {:02x} - ({:016b}) - {:.2f}ms'.format(addr,status, data, addr, clk_diff)
         instructions[addr] = data
         print(writing)
 
@@ -68,7 +73,7 @@ for i in addr_pins:
 #         callback=clock_trigger, bouncetime=20)
 
 GPIO.add_event_detect(clock_pin, GPIO.RISING, 
-        callback=clock_trigger, bouncetime=20)
+        callback=clock_trigger)
 
 signal.signal(signal.SIGINT,exit_handler)
 signal.pause()
