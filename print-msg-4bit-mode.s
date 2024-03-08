@@ -109,7 +109,8 @@ write_char:
  EOR #E
  STA ORB
  PLA ; set lower nibble
- AND #(RS | $0F)
+ AND #$0F
+ ORA #RS
  STA ORB
  ORA #E 
  STA ORB
