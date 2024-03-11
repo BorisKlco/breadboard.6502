@@ -210,11 +210,13 @@ write_char:
  
 nmi:
 irq:
+ PHA
  INC counter
  BNE exit_irq
  INC counter + 1
 exit_irq:
  BIT ORA_IRA
+ PLA
  RTI
  
  .org $9ffa ;for 28c64 rom
