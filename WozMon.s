@@ -17,6 +17,7 @@ YSAV     =     $2A        ;  Used to see if hex value is given
 MODE     =     $2B        ;  $00=XAM, $7F=STOR, $AE=BLOCK XAM
 
 IN       =     $0200      ;  Input buffer to $027F
+msg      =     $1000
 
 ACIA_DATA =     $5000
 ACIA_STATUS =     $5001      ; status register
@@ -41,7 +42,23 @@ lcd_reset:
          LDA   #$01       ;clear Display
          JSR   lcd_instruction
 
+         PLX
+         PLA
+
+         JMP   $FF00
+
+         .org  $9000
+
+lcd_rewrite:
+         PHA
+         PHX
+
+         LDA   #$01       ;clear Display
+         JSR   lcd_instruction
+
+
          LDX   #$00
+         STX   $1080
 
 custom_text:
          LDA   msg,X
@@ -54,8 +71,6 @@ halt:
          PLX
          PLA
          JMP   $FF00
-
-msg:     .asciiz "Custom,   text"
 
 
 lcd_init:
