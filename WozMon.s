@@ -163,8 +163,9 @@ write_char:
 RESET:
          LDA   #$1F       ;8-N-1,19200bps
          STA   ACIA_CTRL
-         LDY   #$8B       ; no echo, no intrq
+         LDY   #$0B       ; no echo, no intrq
          STY   ACIA_CMD
+         LDA   #$1B
 NOTCR:
          CMP   #$08       ; "_"?
          BEQ   BACKSPACE  ; Yes.
