@@ -1,6 +1,9 @@
 # breadboard.6502
 Building breadboard 6502 computer
 
+https://github.com/BorisKlco/breadboard.6502/assets/122160506/270a0c8e-3362-4063-8944-0ea42b95b5d8
+
+
 ## Parts
 - W65C02S6TPG-14
 - W65C22S6TPG-14(VIA)
