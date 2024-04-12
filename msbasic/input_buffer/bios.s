@@ -28,6 +28,14 @@ CHRIN:
  jsr READ_BUFFER
  ;
  jsr CHROUT
+ pha
+ jsr BUFFER_SIZE
+ cmp #$B0
+ bcs @mostly_full
+ lda #$09
+ sta ACIA_CMD
+@mostly_full:
+ pla
  plx
  sec
  rts
@@ -84,6 +92,12 @@ IRQ:
  lda ACIA_STATUS
  lda ACIA_DATA
  jsr WRITE_BUFFER
+ jsr BUFFER_SIZE
+ cmp #$0F00
+ bcc @not_full
+ lda #$01
+ sta ACIA_CMD
+@not_full:
  plx
  pla
  rti
