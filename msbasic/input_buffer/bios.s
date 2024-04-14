@@ -30,7 +30,7 @@ CHRIN:
  jsr CHROUT
  pha
  jsr BUFFER_SIZE
- cmp #$B0
+ cmp #$E0
  bcs @mostly_full
  lda #$09
  sta ACIA_CMD
