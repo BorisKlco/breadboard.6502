@@ -12,11 +12,12 @@ MODE     =     $2B        ;  $00=XAM, $7F=STOR, $AE=BLOCK XAM
 
 IN       =     $0200      ;  Input buffer to $027F
 
+WOZMON:
 RESET:
          CLD
          JSR INIT_BUFFER
          CLI
-         LDA   #$1E       ;8-N-1,BR 9600
+         LDA   #$1F       ;8-N-1,BR 19200
          STA   ACIA_CTRL
          LDY   #$89       ; no echo, rx intrq
          STY   ACIA_CMD
@@ -40,15 +41,12 @@ BACKSPACE:
          DEY              ; Back up text index.
          BMI   GETLINE    ; Beyond start of line, reinitialize.
 NEXTCHAR:
-         ;LDA   ACIA_STATUS ; Key ready?
-         ;AND   #$08
-         ;BEQ   NEXTCHAR   ; Loop until ready.
-         ;LDA   ACIA_DATA  ; Load character. B7 should be ‘0’.
+
          jsr CHRIN
          bcc NEXTCHAR
-         ;
+
          STA   IN,Y       ; Add to text buffer.
-         ;JSR   ECHO       ; Display character.
+
          CMP   #$0D       ; CR?
          BNE   NOTCR      ; No.
          LDY   #$FF       ; Reset text index.
@@ -156,14 +154,20 @@ PRHEX:
          AND   #$0F       ; Mask LSD for hex print.
          ORA   #$30       ; Add "0".
          CMP   #$3A       ; Digit?
-         BCC   ECHO       ; Yes, output it.
+         BCC   ECHO      ; Yes, output it.
          ADC   #$06       ; Add offset for letter.
 ECHO:
-         PHA
-         STA   ACIA_DATA
-TX_DELAY:
-         LDA   ACIA_STATUS
-         AND   #$10
-         BEQ   TX_DELAY
-         PLA
-         RTS
+    pha
+    sta     ACIA_DATA
+    phx
+    ldx #$03
+@dual_delay:
+    lda     #$FF
+@txdelay:       
+    dec
+    bne     @txdelay
+    dex
+    bne     @dual_delay
+    plx
+    pla
+    rts

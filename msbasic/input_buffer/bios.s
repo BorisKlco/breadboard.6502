@@ -9,6 +9,11 @@ WRITE_PTR: .res 1
 .segment "INPUT_BUFFER"
 INPUT_BUFFER: .res $100
 
+SAREG = $90C          ; Storage Area for .A Register (Accumulator)
+SXREG = $90D          ; Storage Area for .X Index Register
+SYREG = $90E          ; Storage Area for .Y Index Register
+SPREG = $90F          ; Storage Area for .P (Status) Register
+
 .segment "BIOS"
 
 ACIA_DATA =     $5000
@@ -18,15 +23,10 @@ ACIA_CTRL =     $5003
 
 MONRDKEY:
 CHRIN:
- ;lda ACIA_STATUS
- ;and #$08
  phx
  jsr BUFFER_SIZE
- ;
  beq @no_keypressed
- ;lda ACIA_DATA
  jsr READ_BUFFER
- ;
  jsr CHROUT
  pha
  jsr BUFFER_SIZE
@@ -47,14 +47,20 @@ CHRIN:
 
 MONCOUT:
 CHROUT:
- PHA
- STA   ACIA_DATA
-@txdelay:
- LDA   ACIA_STATUS
- AND   #$10
- BEQ   @txdelay
- PLA
- RTS
+    pha
+    sta     ACIA_DATA
+    phx
+    ldx #$03
+@dual_delay:
+    lda     #$FF
+@txdelay:       
+    dec
+    bne     @txdelay
+    dex
+    bne     @dual_delay
+    plx
+    pla
+    rts
 
 ; set pointers as same
 ; Modifies: flags, A
@@ -85,7 +91,7 @@ BUFFER_SIZE:
  sec
  sbc READ_PTR
  rts
-
+ 
 IRQ:
  pha
  phx
@@ -93,14 +99,17 @@ IRQ:
  lda ACIA_DATA
  jsr WRITE_BUFFER
  jsr BUFFER_SIZE
- cmp #$0F00
+ sec
+ cmp #$F0
  bcc @not_full
  lda #$01
  sta ACIA_CMD
 @not_full:
+ clc
  plx
  pla
  rti
+
 
 .include "lcd.s"
 .include "wozmon.s"

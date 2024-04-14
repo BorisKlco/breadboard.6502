@@ -11,5 +11,5 @@ ld65 -C $i.cfg tmp/$i.o -o tmp/$i.bin -Ln tmp/$i.lbl
 done
 
 
-ca65.exe -D w65c02 msbasic.s -o w65c02.o
-ld65.exe -C w65c02.cfg w65c02.o -o w65c02.bin -Ln w65c02.lbl
+C:\Users\klco\Downloads\cc65\bin\ca65.exe -D w65c02 msbasic.s -o w65c02.o
+C:\Users\klco\Downloads\cc65\bin\ld65.exe -C w65c02.cfg w65c02.o -o w65c02.bin -Ln w65c02.lbl
