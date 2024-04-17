@@ -8,7 +8,7 @@ ACIA_CTRL = $5003
 ;
 ; Zeropage
 ;
-BUFFER_PTR = $00
+BUFFER_PTR = $FE
 ;
 ; Input buffer - $0200
 .segment "INPUT_BUFFER"
@@ -65,7 +65,8 @@ CHROUT:
 ; Mod: Flags, A
 ; -----------------
 INIT_BUFFER:
- lda READ_PTR
+ lda #$00
+ sta READ_PTR
  sta WRITE_PTR
  rts
 
@@ -89,9 +90,9 @@ BUFFER_SIZE:
 ; -----------------
 
 READ_BUFFER:
- ldx READ_BUFFER
+ ldx READ_PTR
  lda INPUT_BUFFER, X
- inc READ_BUFFER
+ inc READ_PTR
  rts
  
 ; -----------------
