@@ -1,3 +1,5 @@
+.feature org_per_seg
+
 .zeropage
 
 .org BUFFER_PTR

@@ -5,14 +5,6 @@ ACIA_DATA = $5000
 ACIA_STATUS = $5001     
 ACIA_CMD = $5002    
 ACIA_CTRL = $5003
-;
-; Zeropage
-;
-BUFFER_PTR = $FE
-;
-; Input buffer - $0200
-.segment "INPUT_BUFFER"
-INPUT_BUFFER: .res $100
 ; -------------------------------------
 
 .segment "BIOS"
@@ -131,12 +123,17 @@ IRQ:
  rti
 ; -------------------------------------
 
+NMI:
+ rti
+
+.include "init.s"
+
 ; -------------------------------------
 ; RESTART_VECTORS - $FFFA
 ; SIZE = 6
 ; -----------------
 .segment "RESTART_VECTORS" 
-    .WORD $0F00 ;NMI
+    .WORD NMI ;NMI
     .WORD RESET
     .WORD IRQ
 ; -------------------------------------
