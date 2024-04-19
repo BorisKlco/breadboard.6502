@@ -27,7 +27,7 @@ CHRIN:
  sta ACIA_CMD
 @mostly_full:
  pla
- clc
+ sec
  rts
 @no_input:
  clc
