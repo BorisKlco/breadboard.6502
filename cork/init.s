@@ -1,6 +1,7 @@
 .segment "INIT"
 
 RESET:
+ jsr INIT_BUFFER
  lda #$1F ;8-N-1, BR 19200
  sta ACIA_CTRL
  lda #$89 ; no echo, rx init
@@ -10,14 +11,17 @@ ESCAPE:
  lda #$5C ; "\"
  jsr CHROUT
 NEW_LINE:
- jsr INIT_BUFFER
  lda #$0D ; CR
  jsr CHROUT
  lda #$0A ; LF
  jsr CHROUT
-ENTER:
+ECHO:
  jsr CHRIN
- jmp ENTER
+ cmp #$0D
+ beq ENTER
+ jmp ECHO
+ENTER:
+ jmp NEW_LINE
  
  
 
