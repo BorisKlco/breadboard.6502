@@ -8,9 +8,10 @@ LINE_WIDTH = $50 ; 80 characters
 ; -------------------------------------
 
 .zeropage
-INPUT_PTR := $FF
+INPUT_PTR := $00
 
 INPUT_BUFFER := $0200
 
 .include "bios.s"
 .include "main.s"
+.include "text.s"
