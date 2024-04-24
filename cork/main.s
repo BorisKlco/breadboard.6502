@@ -1,11 +1,11 @@
 .segment "MAIN"
 
 RESET:
+ cli
  lda #$1F ;8-N-1, BR 19200
  sta ACIA_CTRL
  lda #$0B
  sta ACIA_CMD
- cli
 ESCAPE:
  lda #$5C ; "\"
  jsr CHROUT
@@ -65,12 +65,18 @@ ERROR:
 
 PRINT:
  jsr P
- cpy #$FF
- beq NEW_LINE
+ lda #$20
+ jsr CHROUT
  lda P_HIGHER
- jsr P_HEX
+ jsr P_BYTE
  lda P_LOWER
- jsr P_HEX
+ jsr P_BYTE
+ lda #$3A
+ jsr CHROUT
+@test:
+ lda (P_LOWER)
+ jsr P_BYTE
+ jmp NEW_LINE
 
 WRITE:
  lda w_msg, y
@@ -81,12 +87,14 @@ WRITE:
 
 SET:
  lda s_msg, y
- beq NEW_LINE
+ beq @done
  jsr CHROUT
  iny
  bra SET
+@done:
+ jmp NEW_LINE
 
-P_HEX:
+P_BYTE:
  pha
  lsr
  lsr

@@ -4,14 +4,12 @@ P:
  ldx #$01
 READ_INPUT:
  lda INPUT_BUFFER, x
- cmp #$0D
- beq P_RETURN
  eor #$30
  cmp #$0A
- bmi NUM
+ bcc NUM
  adc #$88
  cmp #$FA
- bmi P_RETURN
+ bcc P_RETURN
 
 NUM:
  asl
@@ -29,6 +27,5 @@ HEX:
  bra READ_INPUT
 
 P_RETURN:
- ldy #$FF
  rts
 
