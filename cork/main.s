@@ -1,11 +1,12 @@
 .segment "MAIN"
 
 RESET:
- cli
  lda #$1F ;8-N-1, BR 19200
  sta ACIA_CTRL
- lda #$0B
+ lda #$09 ;no echo, irq
  sta ACIA_CMD
+ jsr INIT_BUFFER
+ cli
 ESCAPE:
  lda #$5C ; "\"
  jsr CHROUT
@@ -16,18 +17,14 @@ NEW_LINE:
  jsr CHROUT
  stz INPUT_PTR
 NEW_CHAR:
- lda ACIA_STATUS
- and #$08
- beq NEW_CHAR          ; Check new char
- lda ACIA_DATA
- ldy INPUT_PTR
+ jsr CHRIN
+ bcc NEW_CHAR          ; Check new char
  cmp #$08              ; Backspace?
  beq BACKSPACE
  cmp #$1B              ; Esc?
  beq ESCAPE         
- sta INPUT_BUFFER, y   ; Store
+ sta TEXT_BUFFER, y    ; Store
  inc INPUT_PTR
- jsr CHROUT
  cmp #$0D
  beq ENTER             ; Enter?
  bra NEW_CHAR
@@ -40,10 +37,11 @@ BACKSPACE:
  bra NEW_CHAR
 
 ENTER:
+ jsr CHROUT
  lda #$0A ; LF
  jsr CHROUT
  ldy #$00
- lda INPUT_BUFFER, y
+ lda TEXT_BUFFER, y
  cmp #$50              ; "P" ?
  beq PRINT
  cmp #$53              ; "S" ?

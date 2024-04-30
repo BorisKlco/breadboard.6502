@@ -3,7 +3,7 @@
 P:
  ldx #$01
 READ_INPUT:
- lda INPUT_BUFFER, x
+ lda TEXT_BUFFER, x
  eor #$30
  cmp #$0A
  bcc NUM
