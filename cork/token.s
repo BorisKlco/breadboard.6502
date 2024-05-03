@@ -2,7 +2,7 @@
 
 P:
  ldx #$01
-READ_INPUT:
+R_INPUT:
  lda TEXT_BUFFER, x
  eor #$30
  cmp #$0A
@@ -24,7 +24,7 @@ HEX:
  dey
  bne HEX
  inx
- bra READ_INPUT
+ bra R_INPUT
 
 P_RETURN:
  rts

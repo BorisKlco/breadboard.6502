@@ -19,25 +19,24 @@ NEW_LINE:
 NEW_CHAR:
  jsr CHRIN
  bcc NEW_CHAR          ; Check new char
+ ldy INPUT_PTR         
  cmp #$08              ; Backspace?
  beq BACKSPACE
  cmp #$1B              ; Esc?
- beq ESCAPE         
+ beq ESCAPE
  sta TEXT_BUFFER, y    ; Store
- inc INPUT_PTR
  cmp #$0D
  beq ENTER             ; Enter?
+ inc INPUT_PTR
  bra NEW_CHAR
 
 BACKSPACE:
  cpy #$01
  bcc NEW_CHAR
- jsr CHROUT
  dec INPUT_PTR
  bra NEW_CHAR
 
 ENTER:
- jsr CHROUT
  lda #$0A ; LF
  jsr CHROUT
  ldy #$00
@@ -63,25 +62,25 @@ ERROR:
 
 PRINT:
  jsr P
- lda #$20
- jsr CHROUT
- lda P_HIGHER
- jsr P_BYTE
- lda P_LOWER
- jsr P_BYTE
- lda #$3A
- jsr CHROUT
-@test:
+ jsr HEX_TO_ADDR
  lda (P_LOWER)
  jsr P_BYTE
  jmp NEW_LINE
 
 WRITE:
- lda w_msg, y
- beq NEW_LINE
- jsr CHROUT
+ jsr P
+ jsr HEX_TO_ADDR
+ ldy #$02
+@find_set
+ cpy #$10
+ beq ERROR
+ lda TEXT_BUFFER,y
+ cmp #$3A
+ beq @new_value
  iny
- bra WRITE
+ bra @find_set
+@new_value
+ jmp NEW_LINE
 
 SET:
  lda s_msg, y
@@ -110,7 +109,16 @@ P_BYTE:
  jsr CHROUT
  rts
  
- 
+
+HEX_TO_ADDR:
+ lda #$20
+ jsr CHROUT
+ lda P_HIGHER
+ jsr P_BYTE
+ lda P_LOWER
+ jsr P_BYTE
+ lda #$3A
+ jsr CHROUT
 
 
  
